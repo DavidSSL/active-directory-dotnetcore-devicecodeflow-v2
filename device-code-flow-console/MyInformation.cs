@@ -22,43 +22,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using Microsoft.Identity.Client;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
+using Newtonsoft.Json.Linq;
 
 namespace device_code_flow_console
 {
     public class MyInformation
     {
-        public MyInformation(IPublicClientApplication app, HttpClient client, string microsoftGraphBaseEndpoint)
+        public MyInformation(
+            IPublicClientApplication app,
+            HttpClient client,
+            string microsoftGraphBaseEndpoint)
         {
             tokenAcquisitionHelper = new PublicAppUsingDeviceCodeFlow(app);
             protectedApiCallHelper = new ProtectedApiCallHelper(client);
-            this.MicrosoftGraphBaseEndpoint = microsoftGraphBaseEndpoint;
+            MicrosoftGraphBaseEndpoint = microsoftGraphBaseEndpoint;
         }
 
-        protected PublicAppUsingDeviceCodeFlow tokenAcquisitionHelper;
+        private readonly PublicAppUsingDeviceCodeFlow tokenAcquisitionHelper;
 
-        protected ProtectedApiCallHelper protectedApiCallHelper;
+        private readonly ProtectedApiCallHelper protectedApiCallHelper;
 
         /// <summary>
         /// Scopes to request access to the protected Web API (here Microsoft Graph)
         /// </summary>
-        private static string[] Scopes { get; set; } = new string[] { "User.Read", "User.ReadBasic.All"};
+        private static string[] Scopes { get; } = {"User.Read", "User.ReadBasic.All"};
 
         /// <summary>
         /// Base endpoint for Microsoft Graph
         /// </summary>
-        private string MicrosoftGraphBaseEndpoint { get; set; }
+        private string MicrosoftGraphBaseEndpoint { get; }
 
         /// <summary>
         /// URLs of the protected Web APIs to call (here Microsoft Graph endpoints)
         /// </summary>
-        private string WebApiUrlMe { get { return $"{MicrosoftGraphBaseEndpoint}/v1.0/me"; } }
-        private string WebApiUrlMyManager { get { return $"{MicrosoftGraphBaseEndpoint}/v1.0/me/manager"; } }
+        private string WebApiUrlMe => $"{MicrosoftGraphBaseEndpoint}/v1.0/me";
+
+        private string WebApiUrlMyManager => $"{MicrosoftGraphBaseEndpoint}/v1.0/me/manager";
 
         /// <summary>
         /// Calls the Web API and displays its information
@@ -66,7 +70,8 @@ namespace device_code_flow_console
         /// <returns></returns>
         public async Task DisplayMeAndMyManagerAsync()
         {
-            AuthenticationResult authenticationResult = await tokenAcquisitionHelper.AcquireATokenFromCacheOrDeviceCodeFlowAsync(Scopes);
+            var authenticationResult =
+                await tokenAcquisitionHelper.AcquireATokenFromCacheOrDeviceCodeFlowAsync(Scopes);
             if (authenticationResult != null)
             {
                 DisplaySignedInAccount(authenticationResult.Account);

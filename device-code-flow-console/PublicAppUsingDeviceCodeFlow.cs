@@ -47,13 +47,14 @@ namespace device_code_flow_console
         {
             App = app;
         }
-        protected IPublicClientApplication App { get; private set; }
+
+        private IPublicClientApplication App { get; }
 
         /// <summary>
         /// Acquires a token from the token cache, or device code flow
         /// </summary>
         /// <returns>An AuthenticationResult if the user successfully signed-in, or otherwise <c>null</c></returns>
-        public async Task<AuthenticationResult> AcquireATokenFromCacheOrDeviceCodeFlowAsync(IEnumerable<String> scopes)
+        public async Task<AuthenticationResult> AcquireATokenFromCacheOrDeviceCodeFlowAsync(string[] scopes)
         {
             AuthenticationResult result = null;
             var accounts = await App.GetAccountsAsync();
@@ -72,12 +73,7 @@ namespace device_code_flow_console
             }
 
             // Cache empty or no token for account in the cache, attempt by device code flow
-            if (result == null)
-            {
-                result = await GetTokenForWebApiUsingDeviceCodeFlowAsync(scopes);
-            }
-
-            return result;
+            return result ?? await GetTokenForWebApiUsingDeviceCodeFlowAsync(scopes);
         }
 
         /// <summary>
@@ -86,7 +82,7 @@ namespace device_code_flow_console
         /// </summary>
         /// <returns>An authentication result, or null if the user canceled sign-in, or did not sign-in on a separate device
         /// after a timeout (15 mins)</returns>
-        private async Task<AuthenticationResult> GetTokenForWebApiUsingDeviceCodeFlowAsync(IEnumerable<string> scopes)
+        private async Task<AuthenticationResult> GetTokenForWebApiUsingDeviceCodeFlowAsync(string[] scopes)
         {
             AuthenticationResult result;
             try
@@ -111,7 +107,7 @@ namespace device_code_flow_console
             catch (MsalServiceException ex)
             {
                 // Kind of errors you could have (in errorCode and ex.Message)
-                string errorCode = ex.ErrorCode;
+                var errorCode = ex.ErrorCode;
 
                 // AADSTS50059: No tenant-identifying information found in either the request or implied by any provided credentials.
                 // Mitigation: as explained in the message from Azure AD, the authoriy needs to be tenanted. you have probably created
@@ -148,6 +144,7 @@ namespace device_code_flow_console
                 // call to `AcquireTokenWithDeviceCodeAsync` is not cancelled in between
                 result = null;
             }
+
             return result;
         }
     }

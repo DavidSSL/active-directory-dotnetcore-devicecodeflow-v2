@@ -40,15 +40,15 @@ namespace device_code_flow_console
     /// 
     /// For more information see https://aka.ms/msal-net-device-code-flow
     /// </summary>
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static async Task Main()
         {
             try
             {
-                RunAsync().GetAwaiter().GetResult();
+                await RunAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(ex.Message);
@@ -61,13 +61,14 @@ namespace device_code_flow_console
 
         private static async Task RunAsync()
         {
-            SampleConfiguration config = SampleConfiguration.ReadFromJsonFile("appsettings.json");
+            var config = SampleConfiguration.ReadFromJsonFile("appsettings.json");
             var appConfig = config.PublicClientApplicationOptions;
-            var app = PublicClientApplicationBuilder.CreateWithApplicationOptions(appConfig)
-                                                    .Build();
+            var app = PublicClientApplicationBuilder
+                .CreateWithApplicationOptions(appConfig)
+                .Build();
             var httpClient = new HttpClient();
 
-            MyInformation myInformation = new MyInformation(app, httpClient, config.MicrosoftGraphBaseEndpoint);
+            var myInformation = new MyInformation(app, httpClient, config.MicrosoftGraphBaseEndpoint);
             await myInformation.DisplayMeAndMyManagerAsync();
         }
     }
