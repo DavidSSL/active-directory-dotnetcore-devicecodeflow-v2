@@ -76,7 +76,7 @@ namespace device_code_flow_console
             {
                 DisplaySignedInAccount(authenticationResult.Account);
 
-                string accessToken = authenticationResult.AccessToken;
+                var accessToken = authenticationResult.AccessToken;
                 await CallWebApiAndDisplayResultAsync(WebApiUrlMe, accessToken, "Me");
                 await CallWebApiAndDisplayResultAsync(WebApiUrlMyManager, accessToken, "My manager");
             }

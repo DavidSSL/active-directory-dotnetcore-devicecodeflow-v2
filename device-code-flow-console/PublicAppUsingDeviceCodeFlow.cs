@@ -82,7 +82,7 @@ namespace device_code_flow_console
         /// </summary>
         /// <returns>An authentication result, or null if the user canceled sign-in, or did not sign-in on a separate device
         /// after a timeout (15 mins)</returns>
-        private async Task<AuthenticationResult> GetTokenForWebApiUsingDeviceCodeFlowAsync(string[] scopes)
+        private async Task<AuthenticationResult> GetTokenForWebApiUsingDeviceCodeFlowAsync(IEnumerable<string> scopes)
         {
             AuthenticationResult result;
             try
